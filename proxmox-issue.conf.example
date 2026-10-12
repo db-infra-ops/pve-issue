@@ -1,0 +1,15 @@
+# /etc/default/proxmox-issue
+# Konfiguration fuer update-proxmox-issue.sh (KEY=WERT, '#' = Kommentar).
+# Die Datei wird nur geparst, nicht als Shell ausgefuehrt.
+
+# Units, die bei "fehlgeschlagen" ignoriert werden (Namen mit oder ohne .service,
+# Wildcards erlaubt, Trennung per Leerzeichen oder Komma).
+#IGNORE_UNITS="openipmi.service ugreen-* zfs-import-scan"
+
+# Namenspraefixe, bei denen ein Ausfall als ERROR statt WARN gilt.
+# Default: pve corosync ceph zfs pbs proxmox multipath nut networking
+# Leerer Wert (CRITICAL_UNITS=) = alles nur WARN.
+#CRITICAL_UNITS="pve corosync ceph"
+
+# Backup-Zeile ausblenden (z. B. wenn Backups nicht ueber vzdump dieses Nodes laufen).
+#BACKUP_CHECK=no
