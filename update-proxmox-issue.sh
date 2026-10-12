@@ -97,6 +97,13 @@ IGNORE_UNITS = conf_list(CONFIG, 'IGNORE_UNITS')
 CRITICAL_UNITS = conf_list(CONFIG, 'CRITICAL_UNITS', DEFAULT_CRITICAL)
 # Backup-Zeile ganz ausblenden (z. B. wenn Backups nicht ueber vzdump dieses Nodes laufen)
 BACKUP_CHECK = CONFIG.get('BACKUP_CHECK', 'yes').lower() not in ('no', '0', 'false', 'off')
+# Letztes Backup aelter als N Stunden = WARN (Default 48)
+try:
+    BACKUP_MAX_AGE_H = float(CONFIG.get('BACKUP_MAX_AGE_H', 48))
+except ValueError:
+    BACKUP_MAX_AGE_H = 48.0
+# vzdump-Lauf "WARNINGS: n" nicht als WARN werten (Hinweis bleibt in der Zeile sichtbar)
+BACKUP_IGNORE_WARNINGS = CONFIG.get('BACKUP_IGNORE_WARNINGS', 'no').lower() in ('yes', '1', 'true', 'on')
 EXCLUDE_DISKS = ('zd', 'loop', 'ram', 'nbd', 'rbd', 'dm-', 'zram')
 
 # Parallele Laeufe verhindern (z. B. wenn eine Abfrage haengt)
@@ -795,19 +802,20 @@ def collect_backup():
     if status == 'OK':
         level, sev = 'OK', 0
     elif status.startswith('WARNINGS'):
-        level, sev = 'WARN', 1
+        level, sev = ('OK', 0) if BACKUP_IGNORE_WARNINGS else ('WARN', 1)
     else:
         level, sev = 'ERROR', 2
     recent_fails = sum(1 for t in done
                        if t.get('id') and failed(t) and now - ended(t) < 86400)
-    if sev == 0 and (age > 48 * 3600 or recent_fails):
+    if sev == 0 and (age > BACKUP_MAX_AGE_H * 3600 or recent_fails):
         level, sev = 'WARN', 1
     when = datetime.fromtimestamp(ended(last)).strftime('%d.%m. %H:%M')
     text = f'{level} | {when} (vor {fmt_age(age)})'
     if recent_fails:
         text += f' | {recent_fails} Fehler/24h'
-    if sev == 2 and status:
-        text += f' | {status[:30]}'
+    if status and status != 'OK':
+        # Grund der Einstufung anzeigen ("Warnungen" statt WARNINGS, damit die Faerbung passt)
+        text += ' | ' + re.sub(r'^WARNINGS', 'Warnungen', status)[:30]
     d['text'] = text
     if sev:
         d['problems'].append((sev, 'Backup'))
