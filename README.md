@@ -64,7 +64,7 @@ Auf dem Proxmox-Host als root:
 ```bash
 git clone https://github.com/db-infra-ops/pve-issue.git
 cd pve-issue
-bash install.sh
+./install.sh
 ```
 
 Der Installer
@@ -109,6 +109,8 @@ gibt `issue` und `motd` auf dem Terminal aus, ohne Dateien zu schreiben.
 | `IGNORE_UNITS` | fehlgeschlagene Units, die ignoriert werden. Namen mit oder ohne `.service`, Wildcards erlaubt, Trennung per Leerzeichen oder Komma. Ignorierte Units werden als `(N ignoriert)` angezeigt. |
 | `CRITICAL_UNITS` | Namenspräfixe, bei denen ein Ausfall `ERROR` statt `WARN` ergibt. Default: `pve corosync ceph zfs pbs proxmox multipath nut networking`. Leer = alles nur `WARN`. |
 | `BACKUP_CHECK` | `no` blendet die Backup-Zeile aus (z. B. wenn Backups nicht über vzdump dieses Nodes laufen). |
+| `BACKUP_MAX_AGE_H` | Letztes Backup älter als N Stunden = `WARN`. Default: `48`. |
+| `BACKUP_IGNORE_WARNINGS` | `yes` wertet vzdump-Läufe mit `WARNINGS: n` (z. B. Gast ohne Guest-Agent) nicht als `WARN`. Der Hinweis bleibt in der Zeile sichtbar. |
 
 Beispiel:
 
@@ -152,7 +154,7 @@ Die Zeile `Status` nennt nur generische Bereiche (z. B. `WARN | Updates, Backup`
 | Datenträger | Wearout ≥ 80 %, NVMe-Critical-Warning | SMART-Selbsttest fehlgeschlagen |
 | Dienste | fehlgeschlagene Unit | fehlgeschlagene Unit mit kritischem Präfix |
 | Updates | Sicherheitsupdates oder Paketindex älter als 7 Tage | – |
-| Backup | Warnungen, letztes Backup älter als 48 h, Fehler einzelner Gäste in 24 h | letzter Lauf fehlgeschlagen |
+| Backup | vzdump-Lauf mit Warnungen, letztes Backup älter als `BACKUP_MAX_AGE_H` (Default 48 h), Fehler einzelner Gäste in 24 h | letzter Lauf fehlgeschlagen |
 
 ## SMART und SSD-Wearout
 
