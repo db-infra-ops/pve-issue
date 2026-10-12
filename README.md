@@ -64,7 +64,7 @@ Auf dem Proxmox-Host als root:
 ```bash
 git clone https://github.com/db-infra-ops/pve-issue.git
 cd pve-issue
-./install.sh
+bash install.sh
 ```
 
 Der Installer
