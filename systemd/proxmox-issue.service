@@ -1,0 +1,11 @@
+[Unit]
+Description=Update Proxmox Login Screen
+After=pve-cluster.service pvebanner.service
+ConditionPathExists=/usr/local/sbin/update-proxmox-issue.sh
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/update-proxmox-issue.sh
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=120
