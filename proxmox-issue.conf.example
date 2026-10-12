@@ -13,3 +13,10 @@
 
 # Backup-Zeile ausblenden (z. B. wenn Backups nicht ueber vzdump dieses Nodes laufen).
 #BACKUP_CHECK=no
+
+# Letztes Backup aelter als N Stunden = WARN (Default 48).
+#BACKUP_MAX_AGE_H=48
+
+# vzdump-Laeufe mit "WARNINGS: n" (z. B. Gast ohne Guest-Agent) nicht als WARN werten.
+# Der Hinweis bleibt in der Zeile sichtbar.
+#BACKUP_IGNORE_WARNINGS=yes
